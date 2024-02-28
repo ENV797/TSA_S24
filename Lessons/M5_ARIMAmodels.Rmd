@@ -27,7 +27,6 @@ library(tseries)
 library(outliers)
 library(tidyverse)
 library(cowplot)
-
 ```
 
 ## Importing data
@@ -131,6 +130,8 @@ deseasonal_residential_price <-
   
 
 #Plotting orinal and deseasoned series
+  
+
 autoplot()
 
 
