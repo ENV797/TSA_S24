@@ -139,9 +139,11 @@ Simulate a seasonal ARIMA$(0, 1)\times(1, 0)_{12}$ model with $\phi =0 .8$ and $
 
 ```{r}
 set.seed(123)
-sarima_sim <- sim_sarima(n = 120, model = list(sar=0.8, ma=0.5, iorder=0, siorder=0, nseasons=12))
+sarima_sim <- sim_sarima(n = 480, model = list(sar=0.8, ma=0.5, iorder=0, siorder=0, nseasons=12))
 autoplot(ts(sarima_sim)) + ggtitle("Seasonal ARIMA(0,1)x(1,0)_12")
 ```
+
+Based on the plot, while there are fluctuations, they don’t seem to occur at regular intervals that would suggest a strong seasonal effect, especially considering the scale of the time axis which goes up to 480.
 
 ## Q5
 
@@ -150,8 +152,17 @@ Plot ACF and PACF of the simulated series in Q4. Comment if the plots are well r
 ```{r}
 # ACF and PACF plots
 plot_grid(
-  autoplot(Acf(sarima_sim, plot = FALSE)) + ggtitle("ACF of Seasonal ARIMA"),
-  autoplot(Pacf(sarima_sim, plot = FALSE)) + ggtitle("PACF of Seasonal ARIMA"),
+  autoplot(Acf(sarima_sim, plot = FALSE, lag.max=40)) + ggtitle("ACF of Seasonal ARIMA"),
+  autoplot(Pacf(sarima_sim, plot = FALSE, lag.max=40)) + ggtitle("PACF of Seasonal ARIMA"),
   nrow = 1
 )
 ```
+
+In the ACF plots, there are cutoffs, indicating q = 1. There are also positive spikes in ACF at lag 12, 24, 36, and single positive spike in PACF at lag 12, indicating P = 1. However, the trait of q = 1 is not very clear Based on the observation, the ACF and PACF fit the SARIMA model I simulated.
+I can identify the order for both non-seasonal and seasonal components from the ACF and PACF plots:
+For non-seasonal order: 
+If ACF cuts off, it's a MA process, the cutoff is the order value. If the ACF tails off and there is a slow decay, the model may be a AR process.
+If PACF cuts off at certain spikes, it's a AR process, the cutoff is the order value. If the PACF tails off and there is a slow decay, the model may be a MA process.
+For seasonal component:
+If ACF display multiple spikes at seas. lag, it's a SAR process. If it has a single spike, it's SMA process. 
+If PACF has multiple spikes at seas. lag, it's a SMA process. If it has a single spike, it's a SAR process.
